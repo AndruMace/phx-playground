@@ -2,7 +2,7 @@ defmodule NewWeb.WrongLive do
   use NewWeb, :live_view
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, score: 0, message: "Make a guess:", time: time())}
+    {:ok, assign(socket, score: 0, message: "Make a guess:", time: time(), answer: Enum.random(1..10))}
   end
 
   def render(assigns) do
@@ -10,6 +10,7 @@ defmodule NewWeb.WrongLive do
     <h1 class="mb-4 text-4xl font-extrabold">Your Score: {@score}</h1>
     <h2>
       {@message}
+      <br/>
       It's {@time}
     </h2>
     <br/>
@@ -33,8 +34,16 @@ defmodule NewWeb.WrongLive do
   end
 
   def handle_event("guess", %{"number" => guess}, socket) do
-    message = "Your guess: #{guess}. Wrong. Guess again."
-    score = socket.assigns.score - 1
+    {message, score, answer} =
+      if guess == (socket.assigns.answer |> to_string) do
+        {"Correct! Great job", socket.assigns.score + 1, Enum.random(1..10)}
+      else
+        {"Incorrect", socket.assigns.score - 1, socket.assigns.answer}
+      end
+
+    IO.inspect(socket.assigns.answer, label: "Answer")
+    IO.inspect(guess, label: "Guess")
+
     time = time()
     {
       :noreply,
@@ -42,7 +51,8 @@ defmodule NewWeb.WrongLive do
         socket,
         message: message,
         score: score,
-        time: time
+        time: time,
+        answer: answer
       )
     }
   end
