@@ -21,7 +21,6 @@ defmodule NewWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    live "/guess", WrongLive
   end
 
   # Other scopes may use custom stacks.
@@ -52,9 +51,12 @@ defmodule NewWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
+      # the root layout is present even without this line, its just here for demo purposes
+      root_layout: {NewWeb.Layouts, :root},
       on_mount: [{NewWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+      live "/guess", WrongLive
     end
 
     post "/users/update-password", UserSessionController, :update_password

@@ -41,9 +41,6 @@ defmodule NewWeb.WrongLive do
         {"Incorrect", socket.assigns.score - 1, socket.assigns.answer}
       end
 
-    IO.inspect(socket.assigns.answer, label: "Answer")
-    IO.inspect(guess, label: "Guess")
-
     time = time()
     {
       :noreply,
